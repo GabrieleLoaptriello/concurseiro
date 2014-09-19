@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Concurseiro</string>
+    
+    <string name="RecordStudy_StudyLabel">O que você estudou hoje?</string> <!-- What subject did you studied today? -->
+    <string name="RecordStudy_ConfirmButton">Avançar</string>
+    <string name="RecordStudy_AddStudy">Adicionar Matéria</string>
+    <string name="Study_TimeLabel">Quantas horas?</string>
+
+</resources>
