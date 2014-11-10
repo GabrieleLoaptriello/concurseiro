@@ -3,8 +3,7 @@ package raele.util.android.baseactivity;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import raele.util.android.Ident;
-
+import raele.util.android.log.Ident;
 import android.view.View;
 import android.view.View.OnClickListener;
 

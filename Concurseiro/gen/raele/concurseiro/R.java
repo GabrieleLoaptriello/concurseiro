@@ -1085,6 +1085,7 @@ containing a value of this type.
         public static final int RecordStudy_ConfirmButton=0x7f05003f;
         public static final int RecordStudy_StudyLabel=0x7f05003c;
         public static final int RecordStudy_StudyList=0x7f05003d;
+        public static final int Study_ButtonRemove=0x7f050042;
         public static final int Study_SubjectSpinner=0x7f050040;
         public static final int Study_Time=0x7f050041;
         public static final int action_bar=0x7f05001c;
@@ -1172,6 +1173,8 @@ containing a value of this type.
          showAsAction="ifRoom" items can fit. "always" items can override this. 
          */
         public static final int abc_max_action_buttons=0x7f090000;
+        public static final int max_study_time=0x7f090002;
+        public static final int min_study_time=0x7f090001;
     }
     public static final class layout {
         public static final int abc_action_bar_decor=0x7f030000;
@@ -1203,12 +1206,16 @@ containing a value of this type.
         public static final int support_simple_spinner_dropdown_item=0x7f03001a;
     }
     public static final class string {
-        public static final int RecordStudy_AddStudy=0x7f0a0010;
+        public static final int RecordStudy_AddStudy=0x7f0a0014;
         /**  What subject did you studied today? 
          */
-        public static final int RecordStudy_ConfirmButton=0x7f0a000f;
-        public static final int RecordStudy_StudyLabel=0x7f0a000e;
-        public static final int Study_TimeLabel=0x7f0a0011;
+        public static final int RecordStudy_ConfirmButton=0x7f0a0013;
+        public static final int RecordStudy_NewStudyDialogMessage=0x7f0a0016;
+        public static final int RecordStudy_NewStudyDialogTitle=0x7f0a0015;
+        public static final int RecordStudy_StudyLabel=0x7f0a0012;
+        public static final int Study_ButtonRemove=0x7f0a0018;
+        public static final int Study_TimeLabel=0x7f0a0017;
+        public static final int Subject_NewSubject=0x7f0a0019;
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
          */
         public static final int abc_action_bar_home_description=0x7f0a0001;
@@ -1250,6 +1257,10 @@ containing a value of this type.
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
         public static final int app_name=0x7f0a000d;
+        public static final int cancel=0x7f0a0010;
+        public static final int confirm=0x7f0a0011;
+        public static final int no=0x7f0a000f;
+        public static final int yes=0x7f0a000e;
     }
     public static final class style {
         /** 
@@ -2628,7 +2639,7 @@ containing a value of this type.
          */
         public static final int[] MenuView = {
             0x010100ae, 0x0101012c, 0x0101012d, 0x0101012e,
-            0x0101012f, 0x01010130, 0x01010131, 0x01010438
+            0x0101012f, 0x01010130, 0x01010131, 0x01010435
         };
         /**
           <p>

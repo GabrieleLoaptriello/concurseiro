@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import raele.util.android.Ident;
+import raele.util.android.log.Ident;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,6 +20,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+/**
+ * Main annotations to use are:
+ * 
+ * * ActivityActionBarMenu(int menuId) on the class to define the menu to be
+ * 		used in the menu bar for this activity.
+ * * ActivityContentLayout(int layoutId) on the class to define the layout for
+ * 		the activity.
+ * * ActionOnClick(int viewId) on a method to define the action to be called
+ * 		when the user press the button with viewId id. The method can have any
+ * 		encapsulation level and any return type, but it MUST accept only one
+ * 		parameter of type View. An example of use of this annotation is:
+ * 		<code>
+ * 		@ActionOnClick(viewId = R.id.do_something_button)
+ * 		public void doSomethingAction(View view) {
+ * 			// Do something...
+ * 		}
+ * 		</code>
+ * * ActionForMenuItem(int itemId) on a method to define the action to be called
+ * 		when the user press the button for a icon in the menu bar with the id
+ * 		itemId.
+ * * FromIntentExtras(String key) on an attribute to define that this attribute
+ * 		will be injected from the bundle received from the bundle received by
+ * 		this activity from the intent. The data used will be the one for the
+ * 		specified key or null if none is found.
+ * * FromScreenView(int viewId) on an attribute to define that this attribute
+ * 		will be injected with a view found by id viewId, searched in the layout
+ * 		loaded when using ActivityContentLayout annotation. Null is injected
+ * 		instead if the view is not found or the type of the attribute doesn't
+ * 		match the type of the view.
+ * 
+ * @author leonardo
+ */
 public abstract class BaseActivity extends ActionBarActivity {
 
 	private Integer layout;

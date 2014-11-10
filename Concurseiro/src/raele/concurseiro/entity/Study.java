@@ -1,23 +1,47 @@
 package raele.concurseiro.entity;
 
-import java.util.Calendar;
+import java.util.Date;
 
-public class Study {
+import android.content.ContentValues;
+import android.database.Cursor;
+import raele.concurseiro.persistence.DH;
+
+public class Study implements Entity {
 	
+	public static final String TABLE = "study";
+	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_SUBJECT = "subject";
+	public static final String COLUMN_TIME = "time";
+	public static final String COLUMN_DATE = "date";
+	
+	public static final String TYPES =
+			COLUMN_ID + DH.INTEGER + DH.PRIMARY_KEY + "," +
+			COLUMN_SUBJECT + DH.INTEGER + "," +
+			COLUMN_TIME + DH.INTEGER + "," +
+			COLUMN_DATE + DH.INTEGER;
+	
+	@Override
+	public void load(Cursor c) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public ContentValues unload() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private Long id;
 	private Subject subject;
-	private Calendar calendar;
+	private Date date;
 	private Integer time;
 	
-	public Study() {
-		super();
+	public Long getId() {
+		return id;
 	}
-	public Study(Subject subject, Calendar date, Integer time) {
-		super();
-		this.subject = subject;
-		this.calendar = date;
-		this.time = time;
+	public void setId(Long id) {
+		this.id = id;
 	}
-	
 	public Subject getSubject() {
 		return subject;
 	}
@@ -30,11 +54,20 @@ public class Study {
 	public void setTime(Integer time) {
 		this.time = time;
 	}
-	public Calendar getDate() {
-		return calendar;
+	public Date getDate() {
+		return date;
 	}
-	public void setDate(Calendar date) {
-		this.calendar = date;
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
+	@Override
+	public String toString() {
+		String name = "none";
+		if (this.subject != null) {
+			name = this.subject.getName();
+		}
+		return name + " (" + this.time + ")";
 	}
 	
 }
