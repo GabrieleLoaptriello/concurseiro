@@ -159,7 +159,9 @@ public abstract class BaseActivity extends ActionBarActivity {
 				try {
 					field.setAccessible(true);
 					field.set(this, value);
-				} catch (IllegalAccessException | IllegalArgumentException e) {
+				} catch (IllegalAccessException e) {
+					Ident.error("Failed to assign " + value + " to field " + field.getName() + ". Cause: " + e.getMessage());
+				} catch (IllegalArgumentException e) {
 					Ident.error("Failed to assign " + value + " to field " + field.getName() + ". Cause: " + e.getMessage());
 				} finally {
 					field.setAccessible(accessible);
@@ -196,7 +198,9 @@ public abstract class BaseActivity extends ActionBarActivity {
 			try {
 				field.setAccessible(true);
 				field.set(this, view);
-			} catch (IllegalAccessException | IllegalArgumentException e) {
+			} catch (IllegalAccessException e) {
+				Ident.error("Failed to assign " + view + " to field " + field.getName() + ". Cause: " + e.getMessage());
+			} catch (IllegalArgumentException e) {
 				Ident.error("Failed to assign " + view + " to field " + field.getName() + ". Cause: " + e.getMessage());
 			} finally {
 				field.setAccessible(accessible);
@@ -241,8 +245,15 @@ public abstract class BaseActivity extends ActionBarActivity {
 				method.setAccessible(true);
 				method.invoke(this, item);
 				everythingWentOk = true;
-			} catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
+			} catch (IllegalAccessException e) {
+				Ident.error("Couldn't execute method " + method.getName());
+				Ident.error("Make sure this method accept only one parameter of type MenuItem.");
+				Ident.printStackTrace(e);
+			} catch (IllegalArgumentException e) {
+				Ident.error("Couldn't execute method " + method.getName());
+				Ident.error("Make sure this method accept only one parameter of type MenuItem.");
+				Ident.printStackTrace(e);
+			} catch (InvocationTargetException e) {
 				Ident.error("Couldn't execute method " + method.getName());
 				Ident.error("Make sure this method accept only one parameter of type MenuItem.");
 				Ident.printStackTrace(e);

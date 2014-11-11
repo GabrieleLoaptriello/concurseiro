@@ -114,14 +114,18 @@ public class StudyListAdapter extends BaseAdapter {
 					// Do nothing
 				}
 			});
-		} catch (NullPointerException | ClassCastException e) {
+		} catch (NullPointerException e) {
+			Ident.printStackTrace(e);
+		} catch (ClassCastException e) {
 			Ident.printStackTrace(e);
 		}
 
 		try {
 			EditText editText = (EditText) result.findViewById(R.id.Study_Time);
 			editText.setText("" + study.getTime());
-		} catch (NullPointerException | ClassCastException e) {
+		} catch (NullPointerException e) {
+			Ident.printStackTrace(e);
+		} catch (ClassCastException e) {
 			Ident.printStackTrace(e);
 		}
 
@@ -133,7 +137,9 @@ public class StudyListAdapter extends BaseAdapter {
 					StudyListAdapter.this.handler.onRemoveStudy(result, removeButton, study);
 				}
 			});
-		} catch (NullPointerException | ClassCastException e) {
+		} catch (NullPointerException e) {
+			Ident.printStackTrace(e);
+		} catch (ClassCastException e) {
 			Ident.printStackTrace(e);
 		}
 		
