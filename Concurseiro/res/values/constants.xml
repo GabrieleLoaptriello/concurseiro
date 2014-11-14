@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
+    <string name="database_name">concurseiro.db</string>
+	
     <integer name="min_study_time">1</integer>
     <integer name="max_study_time">24</integer>
     

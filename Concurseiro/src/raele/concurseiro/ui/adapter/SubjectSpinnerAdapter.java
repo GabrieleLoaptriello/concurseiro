@@ -1,5 +1,6 @@
 package raele.concurseiro.ui.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import raele.concurseiro.R;
@@ -12,41 +13,36 @@ import android.widget.TextView;
 
 public class SubjectSpinnerAdapter extends BaseAdapter {
 	
-	public static final int NEW_SUBJECT_PLACEHOLDER_ID = -1;
+	private static final long NO_SUBJECT_PLACEHOLDER_ID = -2;
 
-	private final Subject newSubjectPlaceholder;
+	private final Subject noSubjectPlaceholder;
 	private List<Subject> subjects;
 	private Context context;
 	
 	public SubjectSpinnerAdapter(Context context, List<Subject> subjects) {
 		this.context = context;
-		this.subjects = subjects;
 		
-		this.newSubjectPlaceholder = new Subject();
-		this.newSubjectPlaceholder.setId(NEW_SUBJECT_PLACEHOLDER_ID);
-		this.newSubjectPlaceholder.setName(this.context.getString(R.string.Subject_NewSubject));
+		this.noSubjectPlaceholder = new Subject();
+		this.noSubjectPlaceholder.setId(NO_SUBJECT_PLACEHOLDER_ID);
+		this.noSubjectPlaceholder.setName(this.context.getString(R.string.Subject_NoSubject));
+		
+		this.subjects = new ArrayList<Subject>(subjects.size() + 1);
+		this.subjects.add(this.noSubjectPlaceholder);
+		this.subjects.addAll(subjects);
 	}
 
-	public List<Subject> getSubjects() {
-		return subjects;
+	public void addSubject(Subject subject) {
+		this.subjects.add(subject);
 	}
 
 	@Override
 	public int getCount() {
-		return this.subjects.size() + 1;
+		return this.subjects.size();
 	}
 
 	@Override
 	public Subject getItem(int index) {
-		Subject result;
-		if (index < this.subjects.size()) {
-			result = this.subjects.get(index);
-		} else if (index == this.subjects.size()) {
-			result = this.newSubjectPlaceholder;
-		} else {
-			result = null;
-		}
-		return result;
+		return this.subjects.get(index);
 	}
 
 	@Override

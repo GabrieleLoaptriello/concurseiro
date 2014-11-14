@@ -1,10 +1,15 @@
 package raele.concurseiro.persistence;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
+import raele.concurseiro.entity.Entity;
 import raele.concurseiro.entity.Study;
 import raele.concurseiro.entity.Subject;
+import raele.concurseiro.entity.Topic;
 import raele.util.android.log.Ident;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -46,11 +51,11 @@ public class DH extends SQLiteOpenHelper {
 			return this;
 		}
 		
-		public QueryBuilder table(String tableName) {
+		public QueryBuilder table(Class<? extends Entity> entityClass) {
 			if (!this.entities.isEmpty()) {
 				this.entities.add(", ");
 			}
-			this.entities.add(tableName);
+			this.entities.add(DH.tableName(entityClass));
 			return this;
 		}
 		
@@ -62,26 +67,26 @@ public class DH extends SQLiteOpenHelper {
 			return this;
 		}
 		
-		public QueryBuilder where(String... params) {
-			for (String param : params) {
-				this.params.append(param);
-			}
+		public QueryBuilder where(String column, String opperation, Object value) {
+			this.params.append(column);
+			this.params.append(opperation);
+			this.params.append("'" + value + "'");
 			return this;
 		}
 		
-		public QueryBuilder and(String... params) {
+		public QueryBuilder and(String column, String opperation, Object value) {
 			this.params.append(DH.AND);
-			for (String param : params) {
-				this.params.append(param);
-			}
+			this.params.append(column);
+			this.params.append(opperation);
+			this.params.append("'" + value + "'");
 			return this;
 		}
 		
-		public QueryBuilder or(String... params) {
+		public QueryBuilder or(String column, String opperation, Object value) {
 			this.params.append(DH.OR);
-			for (String param : params) {
-				this.params.append(param);
-			}
+			this.params.append(column);
+			this.params.append(opperation);
+			this.params.append("'" + value + "'");
 			return this;
 		}
 		
@@ -127,6 +132,9 @@ public class DH extends SQLiteOpenHelper {
 			return builder.toString();
 		}
 		
+		/**
+		 * Don't forget to close the Cursor!!
+		 */
 		public Cursor query() {
 			Ident.begin();
 			
@@ -139,18 +147,83 @@ public class DH extends SQLiteOpenHelper {
 			
 			Ident.log("Got " + cursor.getCount() + " results.");
 			Ident.end();
+
+			DH.this.close();
 			
 			return cursor;
+		} 
+		
+		public <T extends Entity> T querySingle(Class<T> entityClass) {
+			Ident.begin();
+			
+			Ident.log("Querying...");
+			Cursor cursor = this.query();
+
+			Ident.log("Parsing the results...");
+			T result = null;
+			try {
+				if (cursor.moveToNext()) {
+					result = entityClass.newInstance();
+					result.load(cursor);
+					Ident.log("Got " + result);
+				} else {
+					Ident.log("Got nothing.");
+				}
+			} catch (InstantiationException e) {
+				Ident.error("An error occured while parsing query results: " + e.toString());
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				Ident.error("An error occured while parsing query results: " + e.toString());
+				throw new RuntimeException(e);
+			} finally {
+				cursor.close();
+			}
+			
+			Ident.log("Returning " + result);
+			Ident.end();
+			
+			return result;
+		}
+		
+		public <T extends Entity> List<T> queryMultiple(Class<T> entityClass) {
+			Ident.begin();
+			
+			Ident.log("Querying...");
+			Cursor cursor = this.query();
+
+			Ident.log("Parsing the results...");
+			List<T> result = new ArrayList<T>(cursor.getCount());
+			try {
+				while (cursor.moveToNext())
+				{
+					T entity = entityClass.newInstance();
+					entity.load(cursor);
+					result.add(entity);
+				}
+			} catch (InstantiationException e) {
+				Ident.error("An error occured while parsing query results: " + e.toString());
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				Ident.error("An error occured while parsing query results: " + e.toString());
+				throw new RuntimeException(e);
+			} finally {
+				cursor.close();
+			}
+			
+			Ident.log("Returning " + result.size() + " objects of type " + entityClass.getSimpleName());
+			Ident.end();
+			
+			return result;
 		}
 		
 	}
 
 	// SQL commands
-	private static final String SQL_CREATE = "CREATE TABLE %S (%s)";
+	private static final String SQL_CREATE = "CREATE TABLE %s (%s)";
 	private static final String SQL_DELETE = "DROP TABLE IF EXISTS %s";
 	
 	// SQLite types
-	public static final String PRIMARY_KEY = " primary key autoincrement ";
+	public static final String PRIMARY_KEY = " PRIMARY KEY AUTOINCREMENT ";
 	public static final String INTEGER = " INTEGER ";
 	public static final String STRING = " TEXT ";
 	public static final String FLOAT = " REAL ";
@@ -200,7 +273,7 @@ public class DH extends SQLiteOpenHelper {
     public static String[] columns(String... columns) {
     	return columns;
     }
-
+    
     public DH(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -209,11 +282,66 @@ public class DH extends SQLiteOpenHelper {
     	return new QueryBuilder();
     }
     
-    public void onCreate(SQLiteDatabase db) {
+    public void save(Entity entity) {
+		Ident.begin();
+		
+		ContentValues values = entity.unload(new ContentValues());
+		
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.beginTransaction();
+		try {
+			if (entity.getId() == null) {
+				Ident.log("Inserting entity " + entity);
+				long id = db.insert(DH.tableName(entity.getClass()), null, values);
+				entity.setId(id);
+				Ident.log("Entity inserted with id " + id);
+			} else {
+				Ident.log("Updating entity " + entity);
+				db.update(DH.tableName(entity.getClass()), values, "id = ?", new String[] {""+entity.getId()});
+			}
+			db.setTransactionSuccessful();
+			
+			Ident.log("Transaction commited.");
+		} catch (Exception e) {
+			Ident.error("Rolling back: " + e.toString());
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+
+		Ident.end();
+    }
+    
+    public void delete(Entity entity) {
+    	Ident.begin();
+    	
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.beginTransaction();
+		try {
+			db.delete(DH.tableName(entity.getClass()), "id = ?", new String[] {""+entity.getId()});
+			db.setTransactionSuccessful();
+			
+			Ident.log("Transaction commited successfully.");
+		} catch (Exception e) {
+			Ident.error("Rolling back transaction because: " + e);
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+    	
+    	Ident.end();
+    }
+    
+    public static String tableName(Class<? extends Entity> entityClass) {
+		return entityClass.getSimpleName();
+	}
+
+	public void onCreate(SQLiteDatabase db) {
     	Ident.begin();
     	try {
-	        db.execSQL(String.format(SQL_CREATE, Study.TABLE, Study.TYPES));
-	        db.execSQL(String.format(SQL_CREATE, Subject.TABLE, Subject.TYPES));
+	        db.execSQL(String.format(SQL_CREATE, DH.tableName(Study.class), Study.TYPES));
+	        db.execSQL(String.format(SQL_CREATE, DH.tableName(Subject.class), Subject.TYPES));
+	        db.execSQL(String.format(SQL_CREATE, DH.tableName(Topic.class), Topic.TYPES));
     	} catch (SQLiteException e) {
     		Ident.error(e.toString());
     	}
@@ -223,8 +351,9 @@ public class DH extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     	Ident.begin();
     	try {
-	    	db.execSQL(String.format(SQL_DELETE, Study.TABLE));
-	    	db.execSQL(String.format(SQL_DELETE, Subject.TABLE));
+	    	db.execSQL(String.format(SQL_DELETE, DH.tableName(Study.class)));
+	    	db.execSQL(String.format(SQL_DELETE, DH.tableName(Subject.class)));
+	    	db.execSQL(String.format(SQL_DELETE, DH.tableName(Topic.class)));
 	        this.onCreate(db);
     	} catch (SQLiteException e) {
     		Ident.error(e.toString());
@@ -235,9 +364,7 @@ public class DH extends SQLiteOpenHelper {
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Ident.begin();
 		try {
-	    	db.execSQL(String.format(SQL_DELETE, Study.TABLE));
-	    	db.execSQL(String.format(SQL_DELETE, Subject.TABLE));
-	        this.onCreate(db);
+	    	this.onUpgrade(db, oldVersion, newVersion);
     	} catch (SQLiteException e) {
     		Ident.error(e.toString());
     	}

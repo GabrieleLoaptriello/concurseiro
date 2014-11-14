@@ -6,16 +6,20 @@
     <string name="no">Não</string>
     <string name="cancel">Cancelar</string>
     <string name="confirm">Confirmar</string>
+    <string name="error">Erro</string>
+    <string name="warning">Aviso</string>
     
     <string name="RecordStudy_StudyLabel">O que você estudou hoje?</string> <!-- What subject did you studied today? -->
     <string name="RecordStudy_ConfirmButton">Avançar</string>
     <string name="RecordStudy_AddStudy">+</string>
     <string name="RecordStudy_NewStudyDialogTitle">Nova Matéria</string>
     <string name="RecordStudy_NewStudyDialogMessage">Nome</string>
+    <string name="RecordStudy_NoStudies">Você deve inserir ao menos uma matéria.</string>
     
-    <string name="Study_TimeLabel">Quantas horas?</string>
+    <string name="Study_TimeLabel">Horas</string>
     <string name="Study_ButtonRemove">X</string>
     
+    <string name="Subject_NoSubject">Escolha uma matéria</string>
     <string name="Subject_NewSubject">(Nova Matéria)</string>
 
 </resources>

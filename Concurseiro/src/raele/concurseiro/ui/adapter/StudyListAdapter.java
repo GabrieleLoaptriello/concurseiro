@@ -5,32 +5,29 @@ import java.util.List;
 import raele.concurseiro.R;
 import raele.concurseiro.entity.Study;
 import raele.concurseiro.entity.Subject;
+import raele.concurseiro.entity.Topic;
+import raele.concurseiro.persistence.DH;
 import raele.util.android.log.Ident;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 public class StudyListAdapter extends BaseAdapter {
 	
 	public interface Handler {
-		public void onNewSubject(View view, Spinner spinner, Study study);
 		public void onRemoveStudy(View view, Button button, Study study);
 	}
 	
-	private static final int LAYOUT = R.layout.item_study;
+	private static final int ITEM_LAYOUT = R.layout.item_study;
 	
 	private Context context;
 	private LayoutInflater inflater;
-	private int layout;
 	private List<Study> studies;
 	private SubjectSpinnerAdapter subjectSpinnerAdapter;
 	private Handler handler;
@@ -41,7 +38,6 @@ public class StudyListAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.inflater = inflater;
-		this.layout = LAYOUT;
 		this.studies = studies;
 		this.handler = handler;
 		this.subjectSpinnerAdapter =
@@ -75,45 +71,25 @@ public class StudyListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewGroup target;
-		
-		if (convertView instanceof ViewGroup)
-		{
-			target = (ViewGroup) convertView;
-		}
-		else
-		{
-			target = new FrameLayout(this.context);
-		}
-		
 		Study study = this.getItem(position);
-		View result = createItemView(study, target);
+		View result = this.createViewFor(study);
 		
 		return result;
 	}
 
-	private View createItemView(final Study study, ViewGroup convertView) {
-		final View result = this.inflater.inflate(this.layout, convertView);
+	private View createViewFor(final Study study) {
+		final View result = this.inflater.inflate(ITEM_LAYOUT, null);
 		
 		try {
 			final Spinner subjectSpinner = (Spinner) result.findViewById(R.id.Study_SubjectSpinner);
 			subjectSpinner.setAdapter(this.subjectSpinnerAdapter);
-			subjectSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view,
-						int position, long id) {
-					if (StudyListAdapter.this.subjectSpinnerAdapter.getItemId(position) ==
-							SubjectSpinnerAdapter.NEW_SUBJECT_PLACEHOLDER_ID)
-					{
-						StudyListAdapter.this.handler.onNewSubject(result, subjectSpinner, study);
-					}
-				}
-
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {
-					// Do nothing
-				}
-			});
+			int index = subjectSpinner.getSelectedItemPosition();
+			Subject selectedSubject = this.subjectSpinnerAdapter.getItem(index);
+			Topic topic = new DH(this.context).queryBuilder() // FIXME Gambiarra! :D
+					.table(Topic.class)
+					.where(Topic.COLUMN_SUBJECT_ID, DH.EQUALS, selectedSubject.getId())
+					.querySingle(Topic.class);
+			study.setTopicId(topic.getId());
 		} catch (NullPointerException e) {
 			Ident.printStackTrace(e);
 		} catch (ClassCastException e) {
@@ -122,6 +98,18 @@ public class StudyListAdapter extends BaseAdapter {
 
 		try {
 			EditText editText = (EditText) result.findViewById(R.id.Study_Time);
+			String text = editText.getText().toString();
+			
+			// FIXME This strategy is not working.
+			if (!"".equals(text)) {
+				try {
+					Integer time = Integer.parseInt(text);
+					study.setTime(time);
+				} catch (NumberFormatException e) {
+					Ident.error("Input from user \"" + text + "\" is not an integer.");
+				}
+			}
+			
 			editText.setText("" + study.getTime());
 		} catch (NullPointerException e) {
 			Ident.printStackTrace(e);

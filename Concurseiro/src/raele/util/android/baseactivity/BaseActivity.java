@@ -327,7 +327,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 	
 	public void startActivity(Class<? extends Activity> activity)
 	{
-		this.startActivity(activity, null);
+		this.startActivity(activity, new Bundle());
 	}
 	
 	public void startActivity(Class<? extends Activity> activity, String key, Serializable value)
