@@ -947,8 +947,7 @@ containing a value of this type.
  Minimum width of the search view text entry area. 
          */
         public static final int abc_search_view_text_min_width=0x7f08000c;
-        /**  Default screen margins, per the Android Design guidelines. 
-
+        /** 
          Example customization of dimensions originally defined in res/values/dimens.xml
          (such as screen margins) for screens with more than 820dp of available width. This
          would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
@@ -988,6 +987,14 @@ containing a value of this type.
          (the screen is in portrait). This may be either a fraction or a dimension.
          */
         public static final int dialog_fixed_width_minor=0x7f080012;
+        public static final int padding_large=0x7f080018;
+        public static final int padding_medium=0x7f080019;
+        public static final int padding_small=0x7f08001a;
+        public static final int padding_xlarge=0x7f080017;
+        public static final int text_large=0x7f08001c;
+        public static final int text_medium=0x7f08001d;
+        public static final int text_small=0x7f08001e;
+        public static final int text_xlarge=0x7f08001b;
     }
     public static final class drawable {
         public static final int abc_ab_bottom_solid_dark_holo=0x7f020000;
@@ -1085,9 +1092,15 @@ containing a value of this type.
         public static final int RecordStudy_ConfirmButton=0x7f05003f;
         public static final int RecordStudy_StudyLabel=0x7f05003c;
         public static final int RecordStudy_StudyList=0x7f05003d;
-        public static final int Study_ButtonRemove=0x7f050042;
-        public static final int Study_SubjectSpinner=0x7f050040;
-        public static final int Study_Time=0x7f050041;
+        public static final int Study_ButtonRemove=0x7f050046;
+        public static final int Study_SubjectSpinner=0x7f050044;
+        public static final int Study_Time=0x7f050045;
+        public static final int SubjectSpinner_Name=0x7f050048;
+        public static final int TopicSelectionItem_Name=0x7f050047;
+        public static final int TopicSelection_ConfirmButton=0x7f050043;
+        public static final int TopicSelection_NewTopicButton=0x7f050041;
+        public static final int TopicSelection_ReturnButton=0x7f050042;
+        public static final int TopicSelection_TopicList=0x7f050040;
         public static final int action_bar=0x7f05001c;
         public static final int action_bar_activity_content=0x7f050015;
         public static final int action_bar_container=0x7f05001b;
@@ -1202,8 +1215,11 @@ containing a value of this type.
         public static final int abc_search_view=0x7f030016;
         public static final int abc_simple_decor=0x7f030017;
         public static final int activity_record_study=0x7f030018;
-        public static final int item_study=0x7f030019;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001a;
+        public static final int activity_topic_selection=0x7f030019;
+        public static final int layout_item_study=0x7f03001a;
+        public static final int layout_item_topic_selection=0x7f03001b;
+        public static final int layout_spinner_subject=0x7f03001c;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001d;
     }
     public static final class string {
         public static final int RecordStudy_AddStudy=0x7f0a0017;
@@ -1214,10 +1230,16 @@ containing a value of this type.
         public static final int RecordStudy_NewStudyDialogTitle=0x7f0a0018;
         public static final int RecordStudy_NoStudies=0x7f0a001a;
         public static final int RecordStudy_StudyLabel=0x7f0a0015;
-        public static final int Study_ButtonRemove=0x7f0a001c;
-        public static final int Study_TimeLabel=0x7f0a001b;
-        public static final int Subject_NewSubject=0x7f0a001e;
-        public static final int Subject_NoSubject=0x7f0a001d;
+        public static final int Study_ButtonRemove=0x7f0a0022;
+        public static final int Study_TimeLabel=0x7f0a0021;
+        public static final int Subject_NewSubject=0x7f0a0024;
+        public static final int Subject_NoSubject=0x7f0a0023;
+        public static final int TopicSelection_ConfirmButton=0x7f0a001d;
+        public static final int TopicSelection_DialogMessage=0x7f0a0020;
+        public static final int TopicSelection_DialogTitle=0x7f0a001f;
+        public static final int TopicSelection_NewTopicButton=0x7f0a001c;
+        public static final int TopicSelection_ReturnButton=0x7f0a001e;
+        public static final int TopicSelection_Title=0x7f0a001b;
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
          */
         public static final int abc_action_bar_home_description=0x7f0a0001;

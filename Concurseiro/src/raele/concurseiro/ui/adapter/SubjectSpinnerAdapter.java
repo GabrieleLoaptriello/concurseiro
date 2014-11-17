@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import raele.concurseiro.R;
-import raele.concurseiro.entity.Subject;
+import raele.concurseiro.persistence.Subject;
+
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,17 +15,16 @@ import android.widget.TextView;
 
 public class SubjectSpinnerAdapter extends BaseAdapter {
 	
-	private static final long NO_SUBJECT_PLACEHOLDER_ID = -2;
-
 	private final Subject noSubjectPlaceholder;
 	private List<Subject> subjects;
+	private LayoutInflater inflater;
 	private Context context;
 	
-	public SubjectSpinnerAdapter(Context context, List<Subject> subjects) {
+	public SubjectSpinnerAdapter(Context context, LayoutInflater inflater, List<Subject> subjects) {
 		this.context = context;
+		this.inflater = inflater;
 		
 		this.noSubjectPlaceholder = new Subject();
-		this.noSubjectPlaceholder.setId(NO_SUBJECT_PLACEHOLDER_ID);
 		this.noSubjectPlaceholder.setName(this.context.getString(R.string.Subject_NoSubject));
 		
 		this.subjects = new ArrayList<Subject>(subjects.size() + 1);
@@ -47,15 +48,25 @@ public class SubjectSpinnerAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int index) {
-		return this.getItem(index).getId();
+		Long id = this.getItem(index).getId();
+		
+		if (id == null) {
+			id = -1L;
+		}
+		
+		return id;
 	}
 
 	@Override
 	public View getView(int index, View arg1, ViewGroup arg2) {
 		String text = ""+this.getItem(index);
-		TextView result = new TextView(this.context);
-		result.setText(text);
-		return result;
+		
+		View layout = this.inflater.inflate(R.layout.layout_spinner_subject, null);
+		
+		TextView textView = (TextView) layout.findViewById(R.id.SubjectSpinner_Name);
+		textView.setText(text);
+		
+		return layout;
 	}
 
 }

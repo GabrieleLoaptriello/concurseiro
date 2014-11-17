@@ -16,6 +16,13 @@
     <string name="RecordStudy_NewStudyDialogMessage">Nome</string>
     <string name="RecordStudy_NoStudies">Você deve inserir ao menos uma matéria.</string>
     
+    <string name="TopicSelection_Title">Assunto</string>
+    <string name="TopicSelection_NewTopicButton">Outro Assunto</string>
+    <string name="TopicSelection_ConfirmButton">Próximo</string>
+    <string name="TopicSelection_ReturnButton">Voltar</string>
+    <string name="TopicSelection_DialogTitle">Assunto</string>
+    <string name="TopicSelection_DialogMessage">Qual assunto você estudou?</string>
+    
     <string name="Study_TimeLabel">Horas</string>
     <string name="Study_ButtonRemove">X</string>
     

@@ -1,6 +1,5 @@
 package raele.util.android.baseactivity;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,7 +8,6 @@ import java.util.List;
 
 import raele.util.android.log.Ident;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -152,7 +150,11 @@ public abstract class BaseActivity extends ActionBarActivity {
 			Intent intent = this.getIntent();
 			Bundle bundle = intent.getExtras();
 			
-			if (bundle != null)
+			if (bundle == null)
+			{
+				Ident.error("Couldn't inject field " + field + " because this activity's intent doesn't have a bundle.");
+			}
+			else
 			{
 				Object value = bundle.get(key);
 				boolean accessible = field.isAccessible();
@@ -160,9 +162,9 @@ public abstract class BaseActivity extends ActionBarActivity {
 					field.setAccessible(true);
 					field.set(this, value);
 				} catch (IllegalAccessException e) {
-					Ident.error("Failed to assign " + value + " to field " + field.getName() + ". Cause: " + e.getMessage());
+					Ident.error("Failed to assign " + value + " to field " + field.getName() + ". Cause: " + e.toString());
 				} catch (IllegalArgumentException e) {
-					Ident.error("Failed to assign " + value + " to field " + field.getName() + ". Cause: " + e.getMessage());
+					Ident.error("Failed to assign " + value + " to field " + field.getName() + ". Cause: " + e.toString());
 				} finally {
 					field.setAccessible(accessible);
 				}
@@ -325,23 +327,10 @@ public abstract class BaseActivity extends ActionBarActivity {
 		Toast.makeText(this, getString(resource), Toast.LENGTH_LONG).show();
 	}
 	
-	public void startActivity(Class<? extends Activity> activity)
-	{
-		this.startActivity(activity, new Bundle());
-	}
-	
-	public void startActivity(Class<? extends Activity> activity, String key, Serializable value)
-	{
-		Bundle bundle = new Bundle();
-		bundle.putSerializable(key, value);
-		this.startActivity(activity, bundle);
-	}
-	
-	public void startActivity(Class<? extends Activity> activity, Bundle extras)
-	{
-		Intent intent = new Intent(this, activity);
-		intent.putExtras(extras);
-		this.startActivity(intent);
+	protected static enum NavOption {
+		WAIT,		// Waits the new activity exit, then returns.
+		FINISH,		// Finishes current activity then calls the new activity.
+		NEW_STACK,	// Finishes all waiting activities and calls the new activity in a whole new stack.
 	}
 
 }

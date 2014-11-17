@@ -2,30 +2,27 @@ package raele.concurseiro.controller;
 
 import java.util.List;
 
+import com.activeandroid.query.Select;
+
 import android.content.Context;
-import raele.concurseiro.entity.Subject;
-import raele.concurseiro.persistence.DH;
+import raele.concurseiro.persistence.Subject;
 import raele.util.android.log.Ident;
 
 public class SubjectController extends BaseController<Subject> {
 	
 	public SubjectController(Context context)
 	{
-		super(context);
+		super(Subject.class, context);
 	}
 	
 	public List<Subject> getAll()
 	{
 		Ident.begin();
-		Ident.log("Querying all subjects...");
 		
-		List<Subject> result = new DH(this.getContext()).queryBuilder()
-				.column(Subject.COLUMN_ID)
-				.column(Subject.COLUMN_NAME)
-				.table(Subject.class)
-				.queryMultiple(Subject.class);
+		List<Subject> result = new Select()
+				.from(Subject.class)
+				.execute();
 		
-		Ident.log("Returning " + result.size() + " subjects.");
 		Ident.end();
 		
 		return result;

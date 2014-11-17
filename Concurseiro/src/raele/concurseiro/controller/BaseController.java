@@ -2,17 +2,19 @@ package raele.concurseiro.controller;
 
 import java.util.Collection;
 
-import raele.concurseiro.entity.Entity;
-import raele.concurseiro.persistence.DH;
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Model;
+
 import raele.util.android.log.Ident;
 import android.content.Context;
 
-public class BaseController<T extends Entity> {
+public class BaseController<T extends Model> {
 	
 	private Context context;
+	private Class<T> tClass;
 
-	public BaseController(Context context)
-	{
+	public BaseController(Class<T> tClass, Context context) {
+		this.tClass = tClass;
 		this.context = context;
 	}
 
@@ -22,21 +24,23 @@ public class BaseController<T extends Entity> {
 
 	public void put(T t) {
 		Ident.begin();
-		Ident.log("Persisting " + t);
 		
-		DH dh = new DH(this.context);
-		dh.save(t);
-		dh.close();
+		t.save();
 		
-		Ident.log("Successfully persisted with id " + t.getId());
 		Ident.end();
 	}
 
 	public void put(Collection<T> collection) {
 		Ident.begin();
 		
-		for (T t : collection) {
-			this.put(t);
+		try {
+			ActiveAndroid.beginTransaction();
+			for (T t : collection) {
+				t.save();
+			}
+			ActiveAndroid.setTransactionSuccessful();
+		} finally {
+			ActiveAndroid.endTransaction();
 		}
 		
 		Ident.end();
@@ -44,11 +48,16 @@ public class BaseController<T extends Entity> {
 	
 	public void remove(T t) {
 		Ident.begin();
-		Ident.log("Deleting " + t);
 		
-		DH dh = new DH(this.context);
-		dh.delete(t);
-		dh.close();
+		t.delete();
+		
+		Ident.end();
+	}
+	
+	public void remove(Long id) {
+		Ident.begin();
+		
+		Model.delete(this.tClass, id);
 		
 		Ident.end();
 	}
@@ -56,8 +65,14 @@ public class BaseController<T extends Entity> {
 	public void remove(Collection<T> collection) {
 		Ident.begin();
 		
-		for (T t : collection) {
-			this.remove(t);
+		try {
+			ActiveAndroid.beginTransaction();
+			for (T t : collection) {
+				t.delete();
+			}
+			ActiveAndroid.setTransactionSuccessful();
+		} finally {
+			ActiveAndroid.endTransaction();
 		}
 		
 		Ident.end();

@@ -1,20 +1,22 @@
 package raele.concurseiro.ui.activity;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+
 import raele.concurseiro.R;
-import raele.concurseiro.controller.StudyController;
 import raele.concurseiro.controller.SubjectController;
-import raele.concurseiro.entity.Study;
-import raele.concurseiro.entity.Subject;
+import raele.concurseiro.persistence.Subject;
+import raele.concurseiro.ui.activity.TopicSelectionActivity.PremadeStudy;
 import raele.concurseiro.ui.adapter.StudyListAdapter;
 import raele.util.android.baseactivity.ActionOnClick;
 import raele.util.android.baseactivity.ActivityContentLayout;
@@ -27,7 +29,7 @@ public class RecordStudyActivity extends BaseActivity {
 	
 	@FromScreenView(viewId = R.id.RecordStudy_StudyList)
 	private ListView studyListView;
-	private LinkedList<Study> studies;
+	private LinkedList<PremadeStudy> studies;
 	private StudyListAdapter studyListAdapter;
 	
 	@Override
@@ -36,7 +38,7 @@ public class RecordStudyActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		
 		Ident.log("Initializing variables...");
-		this.studies = new LinkedList<Study>();
+		this.studies = new LinkedList<PremadeStudy>();
 		this.studyListAdapter = this.createStudyListAdapterFor(this.studies);
 		this.studyListView.setAdapter(this.studyListAdapter);
 		
@@ -47,11 +49,11 @@ public class RecordStudyActivity extends BaseActivity {
 	}
 	
 	@ActionOnClick(viewId = R.id.RecordStudy_AddStudy)
-	public void actionAddStudy(View view) {
+	private void actionAddStudy(View view) {
 		Ident.begin();
 		
 		Ident.log("Creating study...");
-		Study newStudy = new Study();
+		PremadeStudy newStudy = new PremadeStudy();
 		newStudy.setTime(1);
 		
 		Ident.log("New study created: " + newStudy);
@@ -80,32 +82,38 @@ public class RecordStudyActivity extends BaseActivity {
 		}
 		else
 		{
-			Ident.log("Persisting new studies.");
-			StudyController controller = new StudyController(this);
-			controller.put(this.studies);
+			Ident.log("Building studies bundle to send to TopicSelectionActivity activity.");
+			ArrayList<PremadeStudy> sendingStudies = new ArrayList<PremadeStudy>(this.studies.size());
+			sendingStudies.addAll(this.studies);
 			
-			Ident.log("Redirecting to summary screen.");
-			this.startActivity(SummaryActivity.class);
+			Bundle extras = new Bundle();
+			extras.putParcelableArrayList(TopicSelectionActivity.BUNDLE_PREMADE_STUDIES_KEY, sendingStudies);
+			
+			Ident.log("Starting new activity.");
+			Intent intent = new Intent(this, TopicSelectionActivity.class);
+			intent.putExtras(extras);
+			this.startActivity(intent);
+			this.finish();
 		}
 		
 		Ident.end();
 	}
 
-	private StudyListAdapter createStudyListAdapterFor(LinkedList<Study> studies) {
+	private StudyListAdapter createStudyListAdapterFor(LinkedList<PremadeStudy> studies) {
 		Ident.begin();
 		Ident.log("Creating new StudyListAdapter for " + studies);
 
 		Context context = this;
 		LayoutInflater inflater = this.getLayoutInflater();
-		List<Subject> subjects = null;
-		StudyListAdapter.Handler studyHandler = null;
+		List<Subject> subjects;
+		StudyListAdapter.Handler studyHandler;
 		
 		SubjectController subjectController = new SubjectController(context);
 		subjects = subjectController.getAll();
 		
 		studyHandler = new StudyListAdapter.Handler() {
 			@Override
-			public void onRemoveStudy(View view, Button button, Study study) {
+			public void onRemoveStudy(View view, Button button, PremadeStudy study) {
 				RecordStudyActivity.this.onRemoveStudy(study);
 			}
 		};
@@ -119,7 +127,7 @@ public class RecordStudyActivity extends BaseActivity {
 		return result;
 	}
 
-	/*private*/ void onRemoveStudy(Study study) {
+	/*private*/ void onRemoveStudy(PremadeStudy study) {
 		Ident.begin();
 		
 		Ident.log("Removing study " + study);
